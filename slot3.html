@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine</title>
+    <style>
+        /* Stile di base per la slot machine */
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f1f1f1;
+            margin: 0;
+        }
+
+        #slotMachine {
+            display: block;
+            text-align: center;
+            background-color: #2e3b4e;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        #slotMachine h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .slot-reel {
+            display: inline-block;
+            font-size: 50px;
+            padding: 20px;
+            margin: 0 10px;
+            background: #1b2a38;
+            border-radius: 10px;
+            width: 120px;
+            height: 120px;
+            line-height: 120px;
+            color: #fff;
+            border: 2px solid #555;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+        }
+
+        #spinButton {
+            background-color: #ff6b6b;
+            color: white;
+            font-size: 18px;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        #spinButton:hover {
+            background-color: #ff4b4b;
+        }
+
+        /* Stili per il messaggio di recensione */
+        #reviewMessage {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #reviewMessage h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #reviewMessage a {
+            color: #4e9bff;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        #attemptsLeft {
+            margin-top: 15px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sezione della Slot Machine -->
+<div id="slotMachine">
+    <h1>Benvenuto nella Slot Machine!</h1>
+    <div class="slot-reel" id="reel1">🍒</div>
+    <div class="slot-reel" id="reel2">🍋</div>
+    <div class="slot-reel" id="reel3">🍊</div>
+    <button id="spinButton">Spin</button>
+    <div id="attemptsLeft"></div>
+</div>
+
+<!-- Sezione per il messaggio di recensione -->
+<div id="reviewMessage">
+    <h2>Hai completato il gioco! Ora inserisci una recensione per riscattare il premio.</h2>
+    <p>Clicca qui per scrivere la recensione:</p>
+    <a href="https://search.google.com/local/writereview?placeid=ChIJZbCyTR88NxMRlMHyz8ovQ2Y" target="_blank">
+        Scrivi una recensione su Google
+    </a>
+    <p>Una volta pubblicata la recensione, ritorna qui per riscattare il premio!</p>
+</div>
+
+<script>
+    // Funzione per gestire il conteggio dei tentativi
+    let attempts = localStorage.getItem('attempts') ? parseInt(localStorage.getItem('attempts')) : 0;
+
+    // Funzione per aggiornare i tentativi rimasti
+    function updateAttempts() {
+        document.getElementById('attemptsLeft').innerText = `Tentativi rimasti: ${3 - attempts}`;
+    }
+
+    // Funzione per far girare la slot machine
+    function spinSlot() {
+        if (attempts >= 3) {
+            alert('Hai raggiunto il numero massimo di tentativi!');
+            redirectToReview();
+            return;
+        }
+
+        attempts++;
+        localStorage.setItem('attempts', attempts);
+
+        // Genera un risultato casuale per la slot
+        let symbols = ['🍒', '🍋', '🍊', '🍉', '🍇'];
+        let reel1 = symbols[Math.floor(Math.random() * symbols.length)];
+        let reel2 = symbols[Math.floor(Math.random() * symbols.length)];
+        let reel3 = symbols[Math.floor(Math.random() * symbols.length)];
+
+        // Aggiorna i risultati delle bobine
+        document.getElementById('reel1').innerText = reel1;
+        document.getElementById('reel2').innerText = reel2;
+        document.getElementById('reel3').innerText = reel3;
+
+        // Se i simboli sono uguali, l'utente vince
+        if (reel1 === reel2 && reel2 === reel3) {
+            alert('Congratulazioni! Hai vinto!');
+        }
+
+        // Aggiorna il numero di tentativi rimasti
+        updateAttempts();
+
+        // Dopo il gioco, mostra il messaggio di recensione
+        if (attempts >= 3 || reel1 === reel2 && reel2 === reel3) {
+            redirectToReview();
+        }
+    }
+
+    // Funzione per reindirizzare alla recensione
+    function redirectToReview() {
+        document.getElementById('slotMachine').style.display = 'none';
+        document.getElementById('reviewMessage').style.display = 'block';
+    }
+
+    // Imposta il comportamento del pulsante Spin
+    document.getElementById('spinButton').addEventListener('click', spinSlot);
+
+    // Aggiorna i tentativi all'inizio della pagina
+    updateAttempts();
+</script>
+
+</body>
+</html>
